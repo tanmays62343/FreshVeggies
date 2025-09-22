@@ -2,6 +2,7 @@ package com.trx.freshveggies.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.trx.freshveggies.R
 import com.trx.freshveggies.data.model.CartItem
 import com.trx.freshveggies.data.model.Vegetable
 
@@ -20,16 +21,16 @@ class VegetableRepository private constructor() {
     
     // Sample vegetable data
     private val vegetables = listOf(
-        Vegetable(1, "Tomato", 25.0),
-        Vegetable(2, "Onion", 20.0),
-        Vegetable(3, "Potato", 15.0),
-        Vegetable(4, "Carrot", 30.0),
-        Vegetable(5, "Broccoli", 45.0),
-        Vegetable(6, "Spinach", 35.0),
-        Vegetable(7, "Bell Pepper", 40.0),
-        Vegetable(8, "Cucumber", 18.0),
-        Vegetable(9, "Cauliflower", 35.0),
-        Vegetable(10, "Green Beans", 28.0)
+        Vegetable(1, "Tomato", 25.0, R.drawable.ic_tomato),
+        Vegetable(2, "Onion", 20.0, R.drawable.ic_onion),
+        Vegetable(3, "Potato", 15.0, R.drawable.ic_vegetable_placeholder),
+        Vegetable(4, "Carrot", 30.0, R.drawable.ic_carrot),
+        Vegetable(5, "Broccoli", 45.0, R.drawable.ic_broccoli),
+        Vegetable(6, "Spinach", 35.0, R.drawable.ic_vegetable_placeholder),
+        Vegetable(7, "Bell Pepper", 40.0, R.drawable.ic_bell_pepper),
+        Vegetable(8, "Cucumber", 18.0, R.drawable.ic_vegetable_placeholder),
+        Vegetable(9, "Cauliflower", 35.0, R.drawable.ic_vegetable_placeholder),
+        Vegetable(10, "Green Beans", 28.0, R.drawable.ic_vegetable_placeholder)
     )
     
     // Cart items

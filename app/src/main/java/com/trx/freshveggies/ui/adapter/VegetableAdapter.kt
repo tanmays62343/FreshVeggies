@@ -19,6 +19,7 @@ class VegetableAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(vegetable: Vegetable) {
+            binding.imageViewVegetable.setImageResource(vegetable.imageRes)
             binding.textViewVegetableName.text = vegetable.name
             binding.textViewVegetablePrice.text = "₹${String.format("%.2f", vegetable.price)}"
 

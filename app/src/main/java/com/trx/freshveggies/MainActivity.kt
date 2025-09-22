@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.trx.freshveggies.databinding.ActivityMainBinding
 import com.trx.freshveggies.ui.activity.CartActivity
 import com.trx.freshveggies.ui.adapter.VegetableAdapter
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         binding.recyclerViewVegetables.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = GridLayoutManager(this@MainActivity, 2) // 2 columns
             adapter = vegetableAdapter
         }
     }
