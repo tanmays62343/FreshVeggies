@@ -2,7 +2,10 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.FreshVeggies" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/green_primary</item>
+        <item name="colorPrimaryVariant">@color/green_primary_variant</item>
+        <item name="colorSecondary">@color/green_secondary</item>
+        <item name="colorSurface">@color/green_surface</item>
     </style>
 
     <style name="Theme.FreshVeggies" parent="Base.Theme.FreshVeggies" />

@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Fresh Veggies Theme Colors -->
+    <color name="green_primary">#4CAF50</color>
+    <color name="green_primary_variant">#388E3C</color>
+    <color name="green_secondary">#8BC34A</color>
+    <color name="green_surface">#F1F8E9</color>
 </resources>
