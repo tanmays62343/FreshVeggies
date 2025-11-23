@@ -1,4 +1,4 @@
-package com.trx.freshveggies
+package com.trx.freshveggies.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,11 +8,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.trx.freshveggies.databinding.ActivityMainBinding
-import com.trx.freshveggies.ui.activity.CartActivity
 import com.trx.freshveggies.ui.adapter.VegetableAdapter
 import com.trx.freshveggies.ui.viewmodel.VegetableListViewModel
 
-class MainActivity : AppCompatActivity() {
+class VeggiesListingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: VegetableListViewModel by viewModels()
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         binding.recyclerViewVegetables.apply {
-            layoutManager = GridLayoutManager(this@MainActivity, 2) // 2 columns
+            layoutManager = GridLayoutManager(this@VeggiesListingActivity, 2) // 2 columns
             adapter = vegetableAdapter
         }
     }
