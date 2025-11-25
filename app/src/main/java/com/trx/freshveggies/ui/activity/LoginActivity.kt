@@ -19,6 +19,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityLoginBinding
 
+    //Authentication
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private var verificationId: String? = null
