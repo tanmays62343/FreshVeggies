@@ -19,7 +19,8 @@
 
         <activity
             android:name=".ui.activity.AddAddressActivity"
-            android:exported="false" />
+            android:exported="false" >
+        </activity>
 
         <activity
             android:name=".ui.activity.VeggiesListingActivity"
