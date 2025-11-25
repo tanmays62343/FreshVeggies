@@ -36,7 +36,8 @@ class VeggiesListingActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         vegetableAdapter = VegetableAdapter(
-            vegetables = viewModel.getVegetables(),
+            this,
+            vegetables = mutableListOf(),
             onAddClick = { vegetable ->
                 viewModel.addToCart(vegetable)
             },
@@ -58,6 +59,11 @@ class VeggiesListingActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
+
+        viewModel.vegetables.observe(this){ veggies ->
+            vegetableAdapter.updateList(veggies)
+        }
+
         viewModel.cartItemCount.observe(this) { count ->
             if (count > 0) {
                 binding.cardViewCart.visibility = View.VISIBLE

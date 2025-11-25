@@ -61,6 +61,9 @@ dependencies {
     
     // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    //Glide
+    implementation(libs.glide)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

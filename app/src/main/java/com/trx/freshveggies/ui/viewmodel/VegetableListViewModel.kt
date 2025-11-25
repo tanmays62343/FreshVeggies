@@ -13,10 +13,8 @@ class VegetableListViewModel : ViewModel() {
     val cartItems: LiveData<MutableList<CartItem>> = repository.cartItems
     val cartTotal: LiveData<Double> = repository.cartTotal
     val cartItemCount: LiveData<Int> = repository.cartItemCount
-    
-    fun getVegetables(): List<Vegetable>{
-        return repository.getVegetables()
-    }
+
+    val vegetables: LiveData<List<Vegetable>> = repository.vegetables
     
     fun addToCart(vegetable: Vegetable) {
         repository.addToCart(vegetable)

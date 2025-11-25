@@ -1,12 +1,17 @@
 package com.trx.freshveggies.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.trx.freshveggies.R
 import com.trx.freshveggies.data.model.CartItem
 import com.trx.freshveggies.data.model.Vegetable
 
 class VegetableRepository private constructor() {
+
+    private val db = Firebase.firestore
     
     companion object {
         @Volatile
@@ -18,20 +23,14 @@ class VegetableRepository private constructor() {
             }
         }
     }
-    
-    // Sample vegetable data
-    private val vegetables = listOf(
-        Vegetable(1, "Tomato", 25.0, R.drawable.ic_tomato),
-        Vegetable(2, "Onion", 20.0, R.drawable.ic_onion),
-        Vegetable(3, "Potato", 15.0, R.drawable.ic_vegetable_placeholder),
-        Vegetable(4, "Carrot", 30.0, R.drawable.ic_carrot),
-        Vegetable(5, "Broccoli", 45.0, R.drawable.ic_broccoli),
-        Vegetable(6, "Spinach", 35.0, R.drawable.ic_vegetable_placeholder),
-        Vegetable(7, "Bell Pepper", 40.0, R.drawable.ic_bell_pepper),
-        Vegetable(8, "Cucumber", 18.0, R.drawable.ic_vegetable_placeholder),
-        Vegetable(9, "Cauliflower", 35.0, R.drawable.ic_vegetable_placeholder),
-        Vegetable(10, "Green Beans", 28.0, R.drawable.ic_vegetable_placeholder)
-    )
+
+    //Veggies list
+    private val _vegetables = MutableLiveData<List<Vegetable>>()
+    val vegetables: LiveData<List<Vegetable>> get() = _vegetables
+
+    init {
+        fetchVegetablesOnce()
+    }
     
     // Cart items
     private val _cartItems = MutableLiveData<MutableList<CartItem>>(mutableListOf())
@@ -44,8 +43,24 @@ class VegetableRepository private constructor() {
     // Cart item count
     private val _cartItemCount = MutableLiveData<Int>(0)
     val cartItemCount: LiveData<Int> = _cartItemCount
-    
-    fun getVegetables(): List<Vegetable> = vegetables
+
+    // If you prefer one-time fetch instead of real-time:
+    fun fetchVegetablesOnce() {
+        db.collection("products")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                //Log.d("BRB", "Veggies: ${snapshot.documents}")
+                val list = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Vegetable::class.java)
+                }
+                _vegetables.postValue(list)
+                //vegetables = list
+                Log.d("BRB", "listenToVegetables: $list")
+            }
+            .addOnFailureListener {
+                Log.e("BRB", "Error getting vegetables", it)
+            }
+    }
     
     fun addToCart(vegetable: Vegetable) {
         val currentCart = _cartItems.value ?: mutableListOf()
