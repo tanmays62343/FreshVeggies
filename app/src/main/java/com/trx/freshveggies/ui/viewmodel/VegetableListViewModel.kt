@@ -14,7 +14,9 @@ class VegetableListViewModel : ViewModel() {
     val cartTotal: LiveData<Double> = repository.cartTotal
     val cartItemCount: LiveData<Int> = repository.cartItemCount
     
-    fun getVegetables(): List<Vegetable> = repository.getVegetables()
+    fun getVegetables(): List<Vegetable>{
+        return repository.getVegetables()
+    }
     
     fun addToCart(vegetable: Vegetable) {
         repository.addToCart(vegetable)
