@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "341645535094",
+    "project_id": "freshveggies-598f8",
+    "storage_bucket": "freshveggies-598f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341645535094:android:f32e4f9454205881207c57",
+        "android_client_info": {
+          "package_name": "com.trx.freshveggies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXant06Jq6nKuSP29RvqNkGMQuTwHrp5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
