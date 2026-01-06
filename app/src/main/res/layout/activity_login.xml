@@ -61,7 +61,7 @@
                 android:layout_marginBottom="24dp" />
 
             <EditText
-                android:id="@+id/edit_text_phone_number"
+                android:id="@+id/et_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@android:drawable/editbox_background_normal"

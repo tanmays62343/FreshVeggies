@@ -85,78 +85,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:hint="Street Address*"
+                android:hint="Flat Number*"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="#4CAF50"
                 app:hintTextColor="#4CAF50">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_street"
+                    android:id="@+id/et_flat_no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPostalAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- City -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <!-- Society Name Spinner -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Select Society*"
+                android:layout_marginBottom="8dp"
+                android:textColor="#4CAF50"/>
+
+            <Spinner
+                android:id="@+id/spinner_society"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
                 android:layout_marginBottom="20dp"
-                android:hint="City*"
-                app:boxBackgroundMode="outline"
-                app:boxStrokeColor="#4CAF50"
-                app:hintTextColor="#4CAF50">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_city"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapWords" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <!-- State -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:hint="State*"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="#4CAF50"
-                    app:hintTextColor="#4CAF50">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_state"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapWords" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Zip Code -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:hint="Zip Code"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="#4CAF50"
-                    app:hintTextColor="#4CAF50">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_zip"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLength="6" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
+                android:background="@drawable/spinner_background"
+                android:padding="8dp"/>
         </LinearLayout>
     </ScrollView>
 

@@ -14,6 +14,13 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.trx.freshveggies.databinding.ActivityLoginBinding
 import java.util.concurrent.TimeUnit
+import android.content.Intent
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import com.trx.freshveggies.data.model.User
+import com.trx.freshveggies.ui.activity.AddAddressActivity
+import com.trx.freshveggies.ui.activity.VeggiesListingActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -47,11 +54,25 @@ class LoginActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         binding.btnSendCode.setOnClickListener {
-            startPhoneNumberVerification("1234567890")
+            val phoneNumber = "+91" + binding.etPhoneNumber.text.toString()
+            if(phoneNumber.isEmpty()){
+                Toast.makeText(this, "Please enter the phone number", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            startPhoneNumberVerification(phoneNumber)
         }
 
         binding.btnVerifyOtp.setOnClickListener {
-            verifyPhoneNumberWithCode("123456")
+            val otp = binding.editTextOtp.text.toString()
+            if (otp.length != 6) {
+                Toast.makeText(this, "Enter valid 6-digit OTP", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            verifyPhoneNumberWithCode(otp)
+        }
+
+        if(auth.currentUser != null){
+            navigateToVeggiesListing()
         }
 
     }
@@ -76,6 +97,9 @@ class LoginActivity : AppCompatActivity() {
 
         override fun onVerificationFailed(e: FirebaseException) {
             // Show error to user
+            Log.d("BRB", "Verification error - $e")
+            Toast.makeText(this@LoginActivity, "Please check the entered mobile number",
+                Toast.LENGTH_SHORT).show()
         }
 
         override fun onCodeSent(
@@ -83,7 +107,12 @@ class LoginActivity : AppCompatActivity() {
             token: PhoneAuthProvider.ForceResendingToken
         ) {
             this@LoginActivity.verificationId = verificationId
-            // Move to OTP screen if needed
+
+            // Switch UI to OTP screen
+            binding.layoutPhoneInput.visibility = View.GONE
+            binding.layoutOtpInput.visibility = View.VISIBLE
+
+            binding.btnSendCode.isEnabled = false
         }
     }
 
@@ -107,8 +136,52 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun onFirebaseUserSignedIn(firebaseUser: FirebaseUser){
+    private fun onFirebaseUserSignedIn(firebaseUser: FirebaseUser) {
+        val uid = firebaseUser.uid
+        val phoneNumber = firebaseUser.phoneNumber ?: ""
 
+        val userRef = firestore.collection("users").document(uid)
+
+        userRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val user = document.toObject(User::class.java)
+                if (user != null && user.addressList.isNotEmpty()) {
+                    navigateToVeggiesListing()
+                } else {
+                    navigateToAddAddress()
+                }
+            } else {
+                val newUser = User(
+                    uid = uid,
+                    phoneNumber = phoneNumber,
+                    addressList = emptyList(),
+                    orderList = emptyList()
+                )
+                userRef.set(newUser).addOnSuccessListener {
+                    navigateToAddAddress()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error creating user: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        .addOnFailureListener { e ->
+            Toast.makeText(this, "Error fetching user data: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToAddAddress() {
+        val intent = Intent(this, AddAddressActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToVeggiesListing() {
+        val intent = Intent(this, VeggiesListingActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
 

@@ -16,6 +16,14 @@ import com.trx.freshveggies.databinding.ActivityCartBinding
 import com.trx.freshveggies.ui.adapter.CartAdapter
 import com.trx.freshveggies.ui.viewmodel.CartViewModel
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.trx.freshveggies.data.model.User
+import com.trx.freshveggies.data.model.Address
+import com.trx.freshveggies.data.model.Order
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
+import android.widget.ArrayAdapter
+import com.trx.freshveggies.ui.activity.VeggiesListingActivity
 
 class CartActivity : AppCompatActivity() {
 
@@ -177,7 +185,11 @@ class CartActivity : AppCompatActivity() {
         return txnRef ?: txnId
     }
 
+    private var addressList: List<Address> = emptyList()
+
     private fun setupClickListeners() {
+        
+        fetchUserAddresses()
 
         binding.buttonPay.setOnClickListener {
             val total = viewModel.cartTotal.value ?: 0.0
@@ -185,10 +197,100 @@ class CartActivity : AppCompatActivity() {
                 Toast.makeText(this, "Cart is empty!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            if (binding.spinnerAddress.selectedItem == null) {
+                Toast.makeText(this, "Please select a delivery address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             //launchPaytmUpiPayment(total)
+            // Simulating payment success for now
             viewModel.onPaymentSuccess("123123")
+             // Real logic should be called from onPaymentSuccess (which is handled by ActivityResult), 
+             // but since I'm simulating it via button click as per existing code comment,
+             // checking if onPaymentSuccess calls something? No, it just updates ViewModel.
+             // I need to intercept the success or handle it.
+             // The existing code has `paymentRef?.let { viewModel.onPaymentSuccess(it) }` in `setupUpiLauncher`.
+             // And button click calls `viewModel.onPaymentSuccess("123123")` directly (commented out real launch).
+             
+             // I will override the button click to call my order placing logic directly for now as per the "Simulator" comment.
+             // OR better, create a function createOrder(txnId)
+             createOrderAndSave("SIMULATED_TXN_123")
         }
 
+    }
+    
+    private fun fetchUserAddresses() {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            FirebaseFirestore.getInstance().collection("users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val userModel = document.toObject(User::class.java)
+                        if (userModel != null) {
+                            addressList = userModel.addressList
+                            setupAddressSpinner()
+                        }
+                    }
+                }
+        }
+    }
+    
+    private fun setupAddressSpinner() {
+        val addressStrings = addressList.map { "${it.fullName}, ${it.flatNo}, ${it.society}" }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, addressStrings)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerAddress.adapter = adapter
+    }
+
+    private fun createOrderAndSave(txnId: String) {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val selectedAddressIndex = binding.spinnerAddress.selectedItemPosition
+        if (selectedAddressIndex == -1 || addressList.isEmpty()) return
+        
+        val selectedAddress = addressList[selectedAddressIndex]
+        val currentItems = viewModel.cartItems.value ?: emptyList()
+        val totalAmount = viewModel.cartTotal.value ?: 0.0
+        
+        if (currentItems.isEmpty()) return
+
+        val orderId = java.util.UUID.randomUUID().toString()
+        val order = Order(
+            id = orderId,
+            uid = user.uid,
+            items = currentItems,
+            totalAmount = totalAmount,
+            paymentRefId = txnId,
+            timeStamp = System.currentTimeMillis(),
+            address = selectedAddress,
+            phoneNumber = user.phoneNumber ?: "",
+            status = "Pending"
+        )
+        
+        val db = FirebaseFirestore.getInstance()
+        val batch = db.batch()
+        
+        // 1. Add to global orders collection
+        val globalOrderRef = db.collection("orders").document(orderId)
+        batch.set(globalOrderRef, order)
+        
+        // 2. Add to user's orderList (using arrayUnion to update the list in User document)
+        // Wait, User model has `val orderList: List<Order>`.
+        // Storing entire order objects in a list in a document might hit size limits (1MB).
+        // But user asked to "saved under the orderList of the user".
+        // I will follow the instruction: "saved under the orderList of the user".
+        val userRef = db.collection("users").document(user.uid)
+        batch.update(userRef, "orderList", FieldValue.arrayUnion(order))
+        
+        batch.commit().addOnSuccessListener {
+            Toast.makeText(this, "Order Placed Successfully!", Toast.LENGTH_SHORT).show()
+            //viewModel.clearCart() // Assuming generic way to clear or just finish
+            
+            val intent = Intent(this, VeggiesListingActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }.addOnFailureListener { e ->
+             Toast.makeText(this, "Failed to place order: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
