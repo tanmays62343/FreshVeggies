@@ -1,7 +1,7 @@
 package com.trx.freshveggies.data.model
 
 data class CartItem(
-    val vegetable: Vegetable,
+    val vegetable: Vegetable = Vegetable(),
     var quantity: Int = 1
 ) {
     val lineTotal: Double

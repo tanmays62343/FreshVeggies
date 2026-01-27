@@ -197,6 +197,21 @@ class CartActivity : AppCompatActivity() {
                 Toast.makeText(this, "Cart is empty!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            if (addressList.isEmpty()) {
+                Toast.makeText(this, "No address found. Please add an address.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            createOrderAndSave("SIMULATED_TXN_123")
+        }
+
+        /*binding.buttonPay.setOnClickListener {
+            val total = viewModel.cartTotal.value ?: 0.0
+            if (total <= 0.0) {
+                Toast.makeText(this, "Cart is empty!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (binding.spinnerAddress.selectedItem == null) {
                 Toast.makeText(this, "Please select a delivery address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -214,7 +229,7 @@ class CartActivity : AppCompatActivity() {
              // I will override the button click to call my order placing logic directly for now as per the "Simulator" comment.
              // OR better, create a function createOrder(txnId)
              createOrderAndSave("SIMULATED_TXN_123")
-        }
+        }*/
 
     }
     
@@ -235,24 +250,40 @@ class CartActivity : AppCompatActivity() {
     }
     
     private fun setupAddressSpinner() {
-        val addressStrings = addressList.map { "${it.fullName}, ${it.flatNo}, ${it.society}" }
+        val addressStrings = addressList.map { "${it.fullName}, ${it.flatNo}, ${it.society}, ${it.phoneNumber}" }
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, addressStrings)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerAddress.adapter = adapter
     }
 
     private fun createOrderAndSave(txnId: String) {
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val selectedAddressIndex = binding.spinnerAddress.selectedItemPosition
-        if (selectedAddressIndex == -1 || addressList.isEmpty()) return
-        
-        val selectedAddress = addressList[selectedAddressIndex]
-        val currentItems = viewModel.cartItems.value ?: emptyList()
-        val totalAmount = viewModel.cartTotal.value ?: 0.0
-        
-        if (currentItems.isEmpty()) return
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        val selectedAddressIndex = binding.spinnerAddress.selectedItemPosition
+        if (selectedAddressIndex == -1 || addressList.isEmpty()) {
+            Toast.makeText(this, "Please select an address", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val currentItems = viewModel.cartItems.value ?: emptyList()
+        if (currentItems.isEmpty()) {
+            Toast.makeText(this, "Cart became empty before placing order", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val totalAmount = viewModel.cartTotal.value ?: 0.0
+        if (totalAmount <= 0.0) {
+            Toast.makeText(this, "Total amount invalid", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedAddress = addressList[selectedAddressIndex]
         val orderId = java.util.UUID.randomUUID().toString()
+
         val order = Order(
             id = orderId,
             uid = user.uid,
@@ -264,33 +295,32 @@ class CartActivity : AppCompatActivity() {
             phoneNumber = user.phoneNumber ?: "",
             status = "Pending"
         )
-        
+
         val db = FirebaseFirestore.getInstance()
         val batch = db.batch()
-        
-        // 1. Add to global orders collection
+
         val globalOrderRef = db.collection("orders").document(orderId)
         batch.set(globalOrderRef, order)
-        
-        // 2. Add to user's orderList (using arrayUnion to update the list in User document)
-        // Wait, User model has `val orderList: List<Order>`.
-        // Storing entire order objects in a list in a document might hit size limits (1MB).
-        // But user asked to "saved under the orderList of the user".
-        // I will follow the instruction: "saved under the orderList of the user".
+
         val userRef = db.collection("users").document(user.uid)
         batch.update(userRef, "orderList", FieldValue.arrayUnion(order))
-        
-        batch.commit().addOnSuccessListener {
-            Toast.makeText(this, "Order Placed Successfully!", Toast.LENGTH_SHORT).show()
-            //viewModel.clearCart() // Assuming generic way to clear or just finish
-            
-            val intent = Intent(this, VeggiesListingActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }.addOnFailureListener { e ->
-             Toast.makeText(this, "Failed to place order: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
+
+        batch.commit()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Order Placed Successfully!", Toast.LENGTH_SHORT).show()
+
+                // clear cart AFTER successful save
+                viewModel.processPayment()
+
+                val intent = Intent(this, VeggiesListingActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to place order: ${e.message}", Toast.LENGTH_LONG).show()
+                android.util.Log.e("ORDER_SAVE", "Batch commit failed", e)
+            }
     }
 
 }

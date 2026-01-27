@@ -11,7 +11,7 @@ data class User(
 
 data class Address(
     val id: String = "",
-    val phoneNumber: String,
+    val phoneNumber: String = "",
     val fullName: String = "",
     val flatNo: String = "",
     val society: String = ""
