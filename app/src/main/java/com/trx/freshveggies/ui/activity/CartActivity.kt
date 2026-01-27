@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldValue
 import android.widget.ArrayAdapter
 import com.trx.freshveggies.ui.activity.VeggiesListingActivity
+import com.trx.freshveggies.utils.SystemUtils
 
 class CartActivity : AppCompatActivity() {
 
@@ -42,6 +43,7 @@ class CartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCartBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        SystemUtils.applyEdgeToEdge(this, binding.root)
 
         setupToolbar()
         setupRecyclerView()

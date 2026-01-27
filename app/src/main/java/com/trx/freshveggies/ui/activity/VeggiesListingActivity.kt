@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.trx.freshveggies.databinding.ActivityMainBinding
 import com.trx.freshveggies.ui.adapter.VegetableAdapter
 import com.trx.freshveggies.ui.viewmodel.VegetableListViewModel
+import com.trx.freshveggies.utils.SystemUtils
 
 class VeggiesListingActivity : AppCompatActivity() {
 
@@ -21,6 +22,8 @@ class VeggiesListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        SystemUtils.applyEdgeToEdge(this, binding.root)
 
         setupRecyclerView()
         observeViewModel()
