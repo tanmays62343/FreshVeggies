@@ -45,10 +45,15 @@ class AddAddressActivity : AppCompatActivity() {
     }
 
     fun validateAndSaveAddress(){
+        val phoneNumber = binding.etPhoneNumber.text.toString().trim()
         val fullName = binding.etFullname.text.toString().trim()
         val flatNo = binding.etFlatNo.text.toString().trim()
         val society = binding.spinnerSociety.selectedItem.toString()
 
+        if (phoneNumber.isEmpty()) {
+            Toast.makeText(this, "Please enter your mobile number", android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
         if (fullName.isEmpty()) {
             Toast.makeText(this, "Please enter Full Name", android.widget.Toast.LENGTH_SHORT).show()
             return
@@ -64,6 +69,7 @@ class AddAddressActivity : AppCompatActivity() {
 
         val address = Address(
             id = java.util.UUID.randomUUID().toString(),
+            phoneNumber = phoneNumber,
             fullName = fullName,
             flatNo = flatNo,
             society = society
