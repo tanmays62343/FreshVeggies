@@ -5,35 +5,117 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_green"
     tools:context=".ui.activity.GoogleLoginActivity">
 
+    <!-- Background Pattern -->
+    <ImageView
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_pattern_green"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Status Bar Spacer (Transparent) -->
     <View
         android:id="@+id/bg_status_bar"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/green_primary"
+        android:background="#00000000"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Company Name at Top -->
     <TextView
-        android:id="@+id/btn_google_login"
+        android:id="@+id/tv_company_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_signup_buttons"
-        android:drawableStart="@drawable/ic_google"
-        android:drawablePadding="12dp"
-        android:paddingHorizontal="88dp"
-        android:paddingVertical="12dp"
-        android:text="Sign in With Google"
-        android:textColor="@color/black"
-        android:textSize="14sp"
+        android:text="M.P.K.V Agricos FPC"
+        android:textSize="20sp"
+        android:textColor="#1B5E20" 
+        android:textStyle="bold"
+        android:layout_marginTop="64dp"
+        app:layout_constraintTop_toBottomOf="@id/bg_status_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Central Logo Circle -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        app:cardCornerRadius="100dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Leaf Icon Placeholder (using text/drawable if available, or just simple text for now) -->
+            <!--<ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_forward" 
+                app:tint="@color/green_primary" 
+                android:rotation="-90"
+                android:scaleType="fitCenter"
+                tools:ignore="ContentDescription" 
+                android:layout_marginBottom="8dp"/>-->
+                <!-- Note: Using arrow as leaf placeholder if no leaf icon exists. Ideally would use a leaf icon. -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FRESH VEGGIES"
+                android:textSize="18sp"
+                android:textColor="#2E7D32"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+            
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Google Login Button -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btn_google_login_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toTopOf="@id/bg_bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bg_status_bar" />
+        android:layout_marginBottom="64dp">
 
+        <TextView
+            android:id="@+id/btn_google_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:drawableStart="@drawable/ic_google"
+            android:drawablePadding="12dp"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="12dp"
+            android:text="Login with Google"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Bottom Bar Spacer (Transparent) -->
     <View
         android:id="@+id/bg_bottom_bar"
         android:layout_width="0dp"
