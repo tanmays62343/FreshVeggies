@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.trx.freshveggies.utils.SystemUtils
+import com.trx.freshveggies.utils.applySystemBarInsets
+import androidx.activity.enableEdgeToEdge
 import com.trx.freshveggies.R
 import com.trx.freshveggies.databinding.ActivityAddAddressBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -20,9 +21,10 @@ class AddAddressActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityAddAddressBinding.inflate(layoutInflater)
+        binding.root.applySystemBarInsets(binding.bgStatusBar, binding.bgBottomBar)
         setContentView(binding.root)
-        SystemUtils.applyEdgeToEdge(this, binding.root)
 
         binding.ivBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()

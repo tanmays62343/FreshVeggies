@@ -9,8 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.trx.freshveggies.databinding.ActivityMainBinding
 import com.trx.freshveggies.ui.adapter.VegetableAdapter
+import androidx.activity.enableEdgeToEdge
 import com.trx.freshveggies.ui.viewmodel.VegetableListViewModel
-import com.trx.freshveggies.utils.SystemUtils
+import com.trx.freshveggies.utils.applySystemBarInsets
 
 class VeggiesListingActivity : AppCompatActivity() {
 
@@ -21,9 +22,9 @@ class VeggiesListingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        binding.root.applySystemBarInsets(binding.bgStatusBar, binding.bgBottomBar)
         setContentView(binding.root)
-
-        SystemUtils.applyEdgeToEdge(this, binding.root)
 
         setupRecyclerView()
         observeViewModel()

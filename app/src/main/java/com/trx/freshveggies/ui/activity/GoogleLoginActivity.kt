@@ -6,7 +6,8 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.trx.freshveggies.utils.SystemUtils
+import com.trx.freshveggies.utils.applySystemBarInsets
+import androidx.activity.enableEdgeToEdge
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -38,9 +39,10 @@ class GoogleLoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityGoogleLoginBinding.inflate(layoutInflater)
+        binding.root.applySystemBarInsets(binding.bgStatusBar, binding.bgBottomBar)
         setContentView(binding.root)
-        SystemUtils.applyEdgeToEdge(this, binding.root)
 
         credentialManager = CredentialManager.create(this)
 

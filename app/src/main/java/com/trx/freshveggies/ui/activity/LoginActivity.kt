@@ -2,7 +2,8 @@ package com.trx.freshveggies.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.trx.freshveggies.utils.SystemUtils
+import com.trx.freshveggies.utils.applySystemBarInsets
+import androidx.activity.enableEdgeToEdge
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,10 +32,10 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding.root.applySystemBarInsets(binding.bgStatusBar, binding.bgBottomBar)
         setContentView(binding.root)
-
-        SystemUtils.applyEdgeToEdge(this, binding.root)
 
 
         auth = FirebaseAuth.getInstance()
