@@ -38,10 +38,29 @@ class AddAddressActivity : AppCompatActivity() {
     }
 
     private fun setupSpinner() {
-        val societies = listOf("Select Society", "Green Valley", "Blue Heights", "Sunny Side", "Royal Gardens")
-        val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, societies)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerSociety.adapter = adapter
+        val db = FirebaseFirestore.getInstance()
+        db.collection("societies")
+            .get()
+            .addOnSuccessListener { result ->
+                val societies = ArrayList<String>()
+                societies.add("Select Society")
+                for (document in result) {
+                    val name = document.getString("Name")
+                    if (name != null) {
+                        societies.add(name)
+                    }
+                }
+                val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, societies)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spinnerSociety.adapter = adapter
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Error getting societies: ${exception.message}", Toast.LENGTH_SHORT).show()
+                val societies = listOf("Select Society")
+                val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, societies)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spinnerSociety.adapter = adapter
+            }
     }
 
     fun validateAndSaveAddress(){
