@@ -36,6 +36,14 @@ class VeggiesListingActivity : AppCompatActivity() {
         }
 
         setupClickListeners()
+
+        //Goto Orders
+        binding.toolbar.setOnClickListener {
+            Intent(this, OrdersActivity::class.java).also {
+                startActivity(it)
+            }
+        }
+
     }
 
     private fun setupRecyclerView() {
