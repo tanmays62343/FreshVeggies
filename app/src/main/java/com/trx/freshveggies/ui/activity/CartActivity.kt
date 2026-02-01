@@ -36,8 +36,8 @@ class CartActivity : AppCompatActivity() {
     private lateinit var upiLauncher: ActivityResultLauncher<Intent>
 
     // Replace with your actual details
-    private val merchantUpiId = "7697093929@ptaxis"      // Admin / shop UPI ID
-    private val merchantName = "Tanmay Deopurkar"    // Display name
+    private val merchantUpiId = "79121101@ubin"
+    private val merchantName = "SAMARTH TRADING"
     private val merchantNote = "FreshVeggies order payment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +99,8 @@ class CartActivity : AppCompatActivity() {
         }
     }
 
+    //--------------------------------UPI Payment---------------------------------------------------
+
     private fun setupUpiLauncher() {
         upiLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -108,45 +110,13 @@ class CartActivity : AppCompatActivity() {
             val isSuccess = parseUpiResponse(response)
 
             if (isSuccess) {
-                val paymentRef = extractTxnRef(response)
+                val paymentRef = extractTxnRef(response) ?: "UnknownRef"
                 Snackbar.make(binding.root, "Payment Successful!", Snackbar.LENGTH_LONG).show()
-                paymentRef?.let { viewModel.onPaymentSuccess(it) }
-                finish() // Close cart after successful payment (optional)
+                createOrderAndSave(paymentRef)
             } else {
                 Snackbar.make(binding.root, "Payment Failed or Cancelled", Snackbar.LENGTH_LONG)
                     .show()
             }
-        }
-    }
-
-    private fun launchPaytmUpiPayment(amount: Double) {
-        val formattedAmount = String.format(Locale.US, "%.2f", amount)
-
-        val uri = Uri.Builder()
-            .scheme("upi")
-            .authority("pay")
-            .appendQueryParameter("pa", merchantUpiId)          // payee address (UPI ID)
-            .appendQueryParameter("pn", merchantName)           // payee name
-            .appendQueryParameter("tn", merchantNote)           // transaction note
-            .appendQueryParameter("am", formattedAmount)        // amount
-            .appendQueryParameter("cu", "INR")                  // currency
-            .build()
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = uri
-            // Force Paytm app (if installed). If you want any UPI app, remove setPackage
-            setPackage("net.one97.paytm")
-        }
-
-        try {
-            upiLauncher.launch(intent)
-        } catch (e: ActivityNotFoundException) {
-            // Paytm not installed
-            Toast.makeText(
-                this,
-                "Paytm app not found. Please install Paytm or use another UPI app.",
-                Toast.LENGTH_LONG
-            ).show()
         }
     }
 
@@ -189,6 +159,43 @@ class CartActivity : AppCompatActivity() {
         return txnRef ?: txnId
     }
 
+    private fun launchUpiPayment(packageName: String, amount: Double) {
+        val formattedAmount = String.format(Locale.US, "%.2f", amount)
+
+        val uri = Uri.Builder()
+            .scheme("upi")
+            .authority("pay")
+            .appendQueryParameter("pa", merchantUpiId)
+            .appendQueryParameter("pn", merchantName)
+            .appendQueryParameter("tn", merchantNote)
+            .appendQueryParameter("am", formattedAmount)
+            .appendQueryParameter("cu", "INR")
+            .build()
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = uri
+            setPackage(packageName)
+        }
+
+        try {
+            upiLauncher.launch(intent)
+        } catch (e: ActivityNotFoundException) {
+            val appName = when (packageName) {
+                "net.one97.paytm" -> "Paytm"
+                "com.google.android.apps.nbu.paisa.user" -> "Google Pay"
+                "com.phonepe.app" -> "PhonePe"
+                else -> "UPI App"
+            }
+            Toast.makeText(
+                this,
+                "$appName not installed on this device.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
     private var addressList: List<Address> = emptyList()
 
     private fun setupClickListeners() {
@@ -206,35 +213,36 @@ class CartActivity : AppCompatActivity() {
                 Toast.makeText(this, "No address found. Please add an address.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            
+            showPaymentBottomSheet(total)
+        }
+    }
 
-            createOrderAndSave("SIMULATED_TXN_123")
+    private fun showPaymentBottomSheet(amount: Double) {
+        val bottomSheetDialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val view = layoutInflater.inflate(com.trx.freshveggies.R.layout.bottom_sheet_payment_options, null)
+        bottomSheetDialog.setContentView(view)
+
+        val btnPaytm = view.findViewById<android.widget.LinearLayout>(com.trx.freshveggies.R.id.btnPaytm)
+        val btnGooglePay = view.findViewById<android.widget.LinearLayout>(com.trx.freshveggies.R.id.btnGooglePay)
+        val btnPhonePe = view.findViewById<android.widget.LinearLayout>(com.trx.freshveggies.R.id.btnPhonePe)
+
+        btnPaytm.setOnClickListener {
+            launchUpiPayment("net.one97.paytm", amount)
+            bottomSheetDialog.dismiss()
         }
 
-        /*binding.buttonPay.setOnClickListener {
-            val total = viewModel.cartTotal.value ?: 0.0
-            if (total <= 0.0) {
-                Toast.makeText(this, "Cart is empty!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (binding.spinnerAddress.selectedItem == null) {
-                Toast.makeText(this, "Please select a delivery address", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            //launchPaytmUpiPayment(total)
-            // Simulating payment success for now
-            viewModel.onPaymentSuccess("123123")
-             // Real logic should be called from onPaymentSuccess (which is handled by ActivityResult), 
-             // but since I'm simulating it via button click as per existing code comment,
-             // checking if onPaymentSuccess calls something? No, it just updates ViewModel.
-             // I need to intercept the success or handle it.
-             // The existing code has `paymentRef?.let { viewModel.onPaymentSuccess(it) }` in `setupUpiLauncher`.
-             // And button click calls `viewModel.onPaymentSuccess("123123")` directly (commented out real launch).
-             
-             // I will override the button click to call my order placing logic directly for now as per the "Simulator" comment.
-             // OR better, create a function createOrder(txnId)
-             createOrderAndSave("SIMULATED_TXN_123")
-        }*/
+        btnGooglePay.setOnClickListener {
+            launchUpiPayment("com.google.android.apps.nbu.paisa.user", amount)
+            bottomSheetDialog.dismiss()
+        }
 
+        btnPhonePe.setOnClickListener {
+            launchUpiPayment("com.phonepe.app", amount)
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
     
     private fun fetchUserAddresses() {
