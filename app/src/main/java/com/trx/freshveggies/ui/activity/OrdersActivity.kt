@@ -11,6 +11,8 @@ import com.trx.freshveggies.R
 import com.trx.freshveggies.data.model.Order
 import com.trx.freshveggies.databinding.ActivityOrdersBinding
 import com.trx.freshveggies.ui.adapter.OrdersAdapter
+import androidx.activity.enableEdgeToEdge
+import com.trx.freshveggies.utils.applySystemBarInsets
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -25,6 +27,8 @@ class OrdersActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrdersBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        binding.root.applySystemBarInsets(binding.bgStatusBar, binding.bgBottomBar)
         setContentView(binding.root)
 
         setupRecyclerView()
@@ -45,6 +49,11 @@ class OrdersActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.btnRefresh.setOnClickListener {
+            fetchOrders()
+            Toast.makeText(this, "Refreshing orders...", Toast.LENGTH_SHORT).show()
+        }
+
         binding.btnFilterToday.setOnClickListener {
             setFilter(true)
         }

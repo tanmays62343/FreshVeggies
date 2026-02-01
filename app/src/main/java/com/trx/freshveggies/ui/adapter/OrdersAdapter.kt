@@ -34,13 +34,32 @@ class OrdersAdapter(
             
             binding.tvOrderName.text = name
             binding.tvOrderContact.text = phone
+            
+            val addressText = order.address?.let {
+                "${it.flatNo}, ${it.society}"
+            } ?: "No Address Provided"
+            binding.tvOrderAddress.text = addressText
+
             binding.tvOrderStatus.text = order.status
             
             // Generate items summary
-            val itemsSummary = order.items.joinToString(", ") { cartItem ->
-                "${cartItem.vegetable.name ?: "Item"} x${cartItem.quantity}"
+            // Generate items summary with Bold Quantity
+            val spannableBuilder = android.text.SpannableStringBuilder()
+            order.items.forEachIndexed { index, cartItem ->
+                val quantityText = "${cartItem.quantity} x "
+                val itemName = (cartItem.vegetable.name ?: "Item") + if (index < order.items.size - 1) "\n" else ""
+                
+                val start = spannableBuilder.length
+                spannableBuilder.append(quantityText)
+                spannableBuilder.setSpan(
+                    android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                    start,
+                    start + quantityText.length,
+                    android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spannableBuilder.append(itemName)
             }
-            binding.tvOrderItems.text = itemsSummary
+            binding.tvOrderItems.text = spannableBuilder
             
             binding.tvPaymentRef.text = order.paymentRefId
             binding.tvTotalAmount.text = "₹ ${order.totalAmount}"

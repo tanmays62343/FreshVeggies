@@ -52,13 +52,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvOrderName" />
 
+        <TextView
+            android:id="@+id/tvOrderAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Flat 101, Galaxy Apartments"
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOrderContact" />
+
         <View
             android:id="@+id/divider1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
             android:background="#EEEEEE"
-            app:layout_constraintTop_toBottomOf="@+id/tvOrderContact" />
+            app:layout_constraintTop_toBottomOf="@+id/tvOrderAddress" />
 
         <TextView
             android:id="@+id/tvOrderItemsLabel"
