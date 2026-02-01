@@ -105,8 +105,10 @@ class OrdersActivity : AppCompatActivity() {
                 val orders = documents.mapNotNull { it.toObject(Order::class.java).copy(id = it.id) }
                 
                 if (orders.isEmpty()) {
+                    Log.d("BRB", "LIST EMPTY")
                     binding.tvEmptyState.visibility = android.view.View.VISIBLE
                 } else {
+                    Log.d("BRB", "LIST: $orders")
                     binding.rvOrders.visibility = android.view.View.VISIBLE
                     ordersAdapter.submitList(orders)
                 }
