@@ -214,8 +214,8 @@ class CartActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            //showPaymentBottomSheet(total)
-            createOrderAndSave("SAMPLE_TXN_NO")
+            showPaymentBottomSheet(total)
+            //createOrderAndSave("SAMPLE_TXN_NO")
         }
     }
 
